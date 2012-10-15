@@ -2,14 +2,26 @@
   <head>
     <title>Currencies</title>
 
-    <script type="text/javascript" src="js/vendor/jquery.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery-ui-1.9.0.custom.min.js"></script>
     <script type="text/javascript" src="js/vendor/highcharts.js"></script>
+
     <script type="text/javascript" src="js/currency.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.9.0.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/app.css"/>
+
+    <meta charset="utf-8">
   </head>
   <body>
-    <button id="refresh">Refresh</button>
+    <div class="container">
+      Time range:
+      <input type="text" name="from" class="date js-datepicker" data-days-ago="-5">
+      &mdash;
+      <input type="text" name="from" class="date js-datepicker" data-days-ago="0">
+
+      <button id="refresh">Show</button>
+    </div>
 
     <script type="text/javascript" src="js/app.js"></script>
   </body>
