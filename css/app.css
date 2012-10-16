@@ -7,7 +7,7 @@ input, .ui-button {
   font-size: 14px;
 }
 
-.container, input, .ui-button {
+.container, input, .ui-button, .highcharts-container {
   border: 1px solid #999999;
   border-radius: 5px 5px 5px 5px;
 }
@@ -23,6 +23,16 @@ input, .ui-button {
   min-height: 300px;
   padding: 25px;
   width: 800px;
+  position: relative;
+}
+
+.container .overlay {
+  background: none repeat scroll 0 0 rgba(255, 255, 255, 0.70);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 input {
@@ -35,9 +45,17 @@ input.date {
 }
 
 .ui-button .ui-button-text {
-  padding: 2px 10px 3px;
+  padding: 3px 10px 4px;
 }
 
 .ui-datepicker {
   font-size: 13px;
+}
+
+.chart {
+  padding: 10px 0;
+}
+
+.chart .error {
+  color: red;
 }
