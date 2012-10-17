@@ -1,5 +1,9 @@
 class BaseRenderer
 
+  @PREDICTION_COEFFICIENT = 0.4
+  @PREDICTION_COEFFICIENT_STEP = 0.1
+  @PREDICTION_ELEMENTS = 5
+
   initDatesAndChart: ->
     @chart = @container.children('.js-chart')
     @from = @getDate(@container, 'from')
@@ -14,7 +18,7 @@ class BaseRenderer
   render: ->
     @showSpinner()
 
-    rangeData = @withPrediction(@getDateRangeData())
+    rangeData = @getDateRangeData()
 
     console.log(rangeData)
 
@@ -22,7 +26,7 @@ class BaseRenderer
       @showError(rangeData.message)
     else
       @chart.empty()
-      @showHighChart(rangeData)
+      @showHighChart(@withPrediction(rangeData))
 
     @hideSpinner()
 
@@ -39,7 +43,7 @@ class BaseRenderer
         text: @chartTitle()
         y: 30
       xAxis:
-        categories: (data.date for data in rangeData)
+        categories: ($.datepicker.formatDate('dd/mm/yy', data.date) for data in rangeData)
       yAxis:
         title:
           text: @chartSeriesName()
@@ -82,7 +86,7 @@ class BaseRenderer
         error: true
         message: 'Failed to fetch data for ' + $.datepicker.formatDate('dd/mm/yy', date) + '.'
 
-    $.extend(result, date: $.datepicker.formatDate('dd/mm/yy', date))
+    $.extend(result, date: date)
 
   showError: (error) ->
     @chart.empty().append($('<div>', class: 'error', text: error))
@@ -99,8 +103,23 @@ class BaseRenderer
     @container.children('.overlay').remove()
 
   withPrediction: (rangeData) ->
-    # TODO: implement prediction for two days
-    rangeData
+    @predict(@predict(rangeData))
+
+  predict: (data) ->
+    delta = 0
+    coefficient = BaseRenderer.PREDICTION_COEFFICIENT
+
+    last = data.slice(-BaseRenderer.PREDICTION_COEFFICIENT)
+
+    for current, index in last.slice(1)
+      previous = last[index]
+
+      console.log([index, previous.value, current.value])
+
+      delta += coefficient * (current.value - previous.value)
+      coefficient -= BaseRenderer.PREDICTION_COEFFICIENT_STEP
+
+    data.concat([{ date: @nextDate(data.last().date), value: data.last().value + delta / (1.0 - coefficient) }])
 
   chartTitle: ->
     throw 'not implemented'
@@ -139,7 +158,7 @@ class WeatherRenderer extends BaseRenderer
     @initDatesAndChart()
 
   chartTitle: ->
-    @city.split('_').slice(-1)[0] + ' weather'
+    @city.split('_').last() + ' weather'
 
   chartSeriesName: ->
     'average temperature'

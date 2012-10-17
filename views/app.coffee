@@ -18,6 +18,6 @@ $ ->
   $('.js-datepicker').each ->
     datepicker = $(@)
     if datepicker.attr('name') == 'from'
-      datepicker.datepicker(maxDate: defaultEndDate, onClose: updateDateLimits).datepicker('setDate', defaultStartDate)
+      datepicker.datepicker(dateFormat: 'dd/mm/yy', maxDate: defaultEndDate, onClose: updateDateLimits).datepicker('setDate', defaultStartDate)
     else
-      datepicker.datepicker(minDate: defaultStartDate, maxDate: defaultEndDate, onClose: updateDateLimits).datepicker('setDate', defaultEndDate)
+      datepicker.datepicker(dateFormat: 'dd/mm/yy', minDate: defaultStartDate, maxDate: defaultEndDate, onClose: updateDateLimits).datepicker('setDate', defaultEndDate)

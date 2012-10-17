@@ -1,0 +1,1 @@
+Array.prototype.last = -> @slice(-1)[0]
