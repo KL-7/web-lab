@@ -17,10 +17,12 @@ class BaseRenderer
     rangeData = @withPrediction(@getDateRangeData())
 
     if rangeData.error
-      showError(rangeData.message)
+      @showError(rangeData.message)
     else
       @chart.empty()
       @showHighChart(rangeData)
+
+    @hideSpinner()
 
   showHighChart: (rangeData) ->
     new Highcharts.Chart
@@ -38,7 +40,7 @@ class BaseRenderer
         categories: (data.date for data in rangeData)
       yAxis:
         title:
-          text: @chartYAxisTitle()
+          text: @chartSeriesName()
       series: [
         name: @chartSeriesName()
         data: (data.value for data in rangeData)
@@ -50,8 +52,6 @@ class BaseRenderer
           color: 'yellow'
       tooltip:
         backgroundColor: '#BDBDBD'
-
-    @hideSpinner()
 
   getDateRangeData: ->
     rangeData = []
@@ -74,7 +74,8 @@ class BaseRenderer
     $.ajax
       url: @apiUrl(date)
       async: false
-      success: (response) => result = @parseResponse(JSON.parse(response))
+      dataType: 'json'
+      success: (response) => result = @parseResponse(response)
       error: -> result =
         error: true
         message: 'Failed to fetch data for ' + $.datepicker.formatDate('dd/mm/yy', date) + '.'
@@ -126,9 +127,6 @@ class CurrencyRenderer extends BaseRenderer
   chartTitle: ->
     @currency + '/USD exchange rate'
 
-  chartYAxisTitle: ->
-    'exchange rate'
-
   chartSeriesName: ->
     'exchange rate'
 
@@ -138,6 +136,28 @@ class CurrencyRenderer extends BaseRenderer
   apiUrl: (date) ->
     CurrencyRenderer.API_URL + 'historical/' + $.datepicker.formatDate('yy-mm-dd', date) + '.json?app_id=' + CurrencyRenderer.API_KEY
 
+
+class WeatherRenderer extends BaseRenderer
+
+  @API_KEY = 'e06c59f816e8caae'
+  @API_URL = 'http://api.wunderground.com/api/'
+
+  constructor: (@container, @city) ->
+    @initDatesAndChart()
+
+  chartTitle: ->
+    @city + ' weather'
+
+  chartSeriesName: ->
+    'average temperature'
+
+  parseResponse: (response) ->
+    $.extend(response, value: response.history.dailysummary.meantempm)
+
+  apiUrl: (date) ->
+    WeatherRenderer.API_URL + WeatherRenderer.API_KEY + '/history_' + $.datepicker.formatDate('yymmdd', date) + '/q/' + @city + '.json'
+
+
 $ ->
-  $('#currencies .js-show').click ->
-    new CurrencyRenderer($('#currencies'), 'GBP').render()
+  $('#currencies .js-show').click -> new CurrencyRenderer($('#currencies'), 'GBP').render()
+  $('#weather .js-show').click -> new WeatherRenderer($('#weather'), 'FR/Paris').render()

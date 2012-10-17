@@ -35,6 +35,14 @@ input, .ui-button {
   width: 100%;
 }
 
+.container h3 {
+  border-bottom: 2px solid #999999;
+  color: #777777;
+  margin: -10px 0 20px;
+  padding: 0 0 10px;
+  text-align: center;
+}
+
 input {
   padding: 5px 7px;
 }

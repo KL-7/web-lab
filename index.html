@@ -7,7 +7,7 @@
     <script type="text/javascript" src="js/vendor/spin.min.js"></script>
     <script type="text/javascript" src="js/vendor/highcharts.js"></script>
 
-    <script type="text/javascript" src="js/currency.js"></script>
+    <script type="text/javascript" src="js/renderers.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.9.0.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/app.css"/>
@@ -16,6 +16,21 @@
   </head>
   <body>
     <div class="container" id="currencies">
+      <h3>Currencies</h3>
+
+      Time range:
+      <input type="text" name="from" class="date js-datepicker">
+      &mdash;
+      <input type="text" name="to" class="date js-datepicker">
+
+      <button class="js-show">Show</button>
+
+      <div class="js-chart chart"></div>
+    </div>
+
+    <div class="container" id="weather">
+      <h3>Weather</h3>
+
       Time range:
       <input type="text" name="from" class="date js-datepicker">
       &mdash;
