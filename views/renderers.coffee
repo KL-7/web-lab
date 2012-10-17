@@ -1,7 +1,6 @@
 class BaseRenderer
 
-  @PREDICTION_COEFFICIENT = 0.4
-  @PREDICTION_COEFFICIENT_STEP = 0.1
+  @PREDICTION_COEFFICIENT = 0.7
   @PREDICTION_ELEMENTS = 5
 
   initDatesAndChart: ->
@@ -19,8 +18,6 @@ class BaseRenderer
     @showSpinner()
 
     rangeData = @getDateRangeData()
-
-    console.log(rangeData)
 
     if rangeData.error
       @showError(rangeData.message)
@@ -106,20 +103,22 @@ class BaseRenderer
     @predict(@predict(rangeData))
 
   predict: (data) ->
-    delta = 0
-    coefficient = BaseRenderer.PREDICTION_COEFFICIENT
+    coeff = BaseRenderer.PREDICTION_COEFFICIENT
+
+    delta_sum = 0
+    coeff_sum = 0
 
     last = data.slice(-BaseRenderer.PREDICTION_COEFFICIENT)
 
     for current, index in last.slice(1)
       previous = last[index]
 
-      console.log([index, previous.value, current.value])
+      delta_sum += coeff * (current.value - previous.value)
+      coeff_sum += coeff
 
-      delta += coefficient * (current.value - previous.value)
-      coefficient -= BaseRenderer.PREDICTION_COEFFICIENT_STEP
+      coeff *= BaseRenderer.PREDICTION_COEFFICIENT
 
-    data.concat([{ date: @nextDate(data.last().date), value: data.last().value + delta / (1.0 - coefficient) }])
+    data.concat([{ date: @nextDate(data.last().date), value: data.last().value + delta_sum / coeff_sum }])
 
   chartTitle: ->
     throw 'not implemented'
