@@ -16,6 +16,8 @@ class BaseRenderer
 
     rangeData = @withPrediction(@getDateRangeData())
 
+    console.log(rangeData)
+
     if rangeData.error
       @showError(rangeData.message)
     else
@@ -75,7 +77,7 @@ class BaseRenderer
       url: @apiUrl(date)
       async: false
       dataType: 'json'
-      success: (response) => result = @parseResponse(response)
+      success: (response) => result = response
       error: -> result =
         error: true
         message: 'Failed to fetch data for ' + $.datepicker.formatDate('dd/mm/yy', date) + '.'
@@ -118,9 +120,6 @@ class BaseRenderer
 
 class CurrencyRenderer extends BaseRenderer
 
-  @API_KEY = '902f65f28d5f4348a6974942a4775eb8'
-  @API_URL = 'http://openexchangerates.org/api/'
-
   constructor: (@container, @currency) ->
     @initDatesAndChart()
 
@@ -130,34 +129,25 @@ class CurrencyRenderer extends BaseRenderer
   chartSeriesName: ->
     'exchange rate'
 
-  parseResponse: (response) ->
-    $.extend(response, value: response.rates[@currency])
-
   apiUrl: (date) ->
-    CurrencyRenderer.API_URL + 'historical/' + $.datepicker.formatDate('yy-mm-dd', date) + '.json?app_id=' + CurrencyRenderer.API_KEY
+    '/currency/' + @currency + '/' + $.datepicker.formatDate('yy-mm-dd', date) + '.json'
 
 
 class WeatherRenderer extends BaseRenderer
-
-  @API_KEY = 'e06c59f816e8caae'
-  @API_URL = 'http://api.wunderground.com/api/'
 
   constructor: (@container, @city) ->
     @initDatesAndChart()
 
   chartTitle: ->
-    @city + ' weather'
+    @city.split('_').slice(-1)[0] + ' weather'
 
   chartSeriesName: ->
     'average temperature'
 
-  parseResponse: (response) ->
-    $.extend(response, value: response.history.dailysummary.meantempm)
-
   apiUrl: (date) ->
-    WeatherRenderer.API_URL + WeatherRenderer.API_KEY + '/history_' + $.datepicker.formatDate('yymmdd', date) + '/q/' + @city + '.json'
+    '/weather/' + @city + '/' + $.datepicker.formatDate('yymmdd', date) + '.json'
 
 
 $ ->
-  $('#currencies .js-show').click -> new CurrencyRenderer($('#currencies'), 'GBP').render()
-  $('#weather .js-show').click -> new WeatherRenderer($('#weather'), 'FR/Paris').render()
+  $('#currency .js-show').click -> new CurrencyRenderer($('#currency'), 'GBP').render()
+  $('#weather .js-show').click -> new WeatherRenderer($('#weather'), 'FR_Paris').render()
